@@ -1,0 +1,44 @@
+{
+  "nodes": {
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1718160348,
+        "narHash": "sha256-9YrUjdztqi4Gz8n3mBuqvCkMo4ojrA6nASwyIKWMpus=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "57d6973abba7ea108bac64ae7629e7431e0199b6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nixpkgs": "nixpkgs",
+        "zuul": "zuul"
+      }
+    },
+    "zuul": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1718356075,
+        "narHash": "sha256-CmtTNB1y9ytq2Qhf6RyryguvSDTFaJ8YVSDuZlyhalE=",
+        "ref": "refs/heads/master",
+        "rev": "b0f080e7b7856b59c32ae8f3de45abf440885a70",
+        "revCount": 10226,
+        "type": "git",
+        "url": "https://review.opendev.org/zuul/zuul"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://review.opendev.org/zuul/zuul"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
