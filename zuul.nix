@@ -1,10 +1,10 @@
 { pkgs, inputs, ... }: let
-  version = "10.0.0";
-  PBR_VERSION=version;
+    version = "${builtins.toString inputs.zuul.revCount}";
 in {
   zuul = pkgs.python3Packages.buildPythonApplication {
     pname = "zuul";
-    inherit version PBR_VERSION;
+    inherit version;
+    PBR_VERSION = version;
     src = inputs.zuul;
     propagatedBuildInputs = with pkgs.python3Packages; [
       alembic
@@ -22,7 +22,6 @@ in {
       netaddr
       kazoo
       pbr
-      pip
       google-cloud-pubsub
       boto3
       python-dateutil
@@ -47,6 +46,7 @@ in {
       psutil
       pyjwt
       cachecontrol
+      setuptools_scm
     ];
     nativeBuildInputs = with pkgs; [
       which

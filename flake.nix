@@ -8,7 +8,6 @@
   };
 
   outputs = { self, nixpkgs, ... }@inputs: {
-
     lib = {
       forAllSystems = function:
         nixpkgs.lib.genAttrs [
