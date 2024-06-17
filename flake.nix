@@ -18,6 +18,9 @@
     packages = self.lib.forAllSystems (pkgs: (import ./zuul.nix {
       inherit pkgs inputs;
     }));
+    checks = self.lib.forAllSystems (pkgs: (import ./checks.nix {
+      inherit self pkgs;
+    }));
   };
 }
 
