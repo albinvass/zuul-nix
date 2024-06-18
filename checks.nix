@@ -48,29 +48,40 @@
       system.stateVersion = "23.11";
     };
 
+    extraPythonPackages = p: with p; [
+      requests
+      types-requests
+    ];
     testScript = /* python */ ''
-      def get_gerrit_account():
-          res = gerrit.succeed("curl --fail-with-body -X POST http://localhost:8080/login/%23%2F?action=create_account -D - -o /dev/null -s")
-          for line in res.splitlines():
-              if line.startswith("Set-Cookie"):
-                  if "GerritAccount" in line:
-                      user_id=line.split(":")[1].split(";")[0].split("=")[1]
-          return user_id
+      import json
+      import requests
 
-      def get_xsrf(gerrit_account):
-           res = gerrit.succeed(f'curl --fail-with-body http://localhost:8080/ -s -H "Cookie: GerritAccount={gerrit_account}" -D - -o /dev/null')
-           for line in res.splitlines():
-               if line.startswith("Set-Cookie:"):
-                   return line.split(":")[1].split(";")[0].split("=")[1]
-
+      start_all()
       scheduler.wait_for_unit("default.target")
       scheduler.succeed("su -- zuul -c 'zuul-scheduler --version'")
 
       gerrit.wait_for_unit("multi-user.target")
 
-      gerrit_account = get_gerrit_account()
-      xsrf = get_xsrf(gerrit_account)
-      gerrit.succeed(f'curl --fail-with-body -X PUT http://localhost:8080/a/accounts/self/username -H "Cookie: GerritAccount={gerrit_account}; XSRF_TOKEN={xsrf}" -d \'{{"username": "admin"}}\' -H "X-Gerrit-Auth: {xsrf}" -H "Content-Type: application/json" -vv')
+      r = requests.post("http://localhost:8080/login/%23%2F?action=create_account")
+      if r.ok:
+        gerrit_account = r.request.headers["Cookie"].split("=")[1]
+        xsrf = r.headers["Set-Cookie"].split(";")[0].split("=")[1]
+
+      r = requests.put(
+        "http://localhost:8080/a/accounts/self/username",
+        cookies={
+          "GerritAccount": gerrit_account,
+          "XSRF_TOKEN": xsrf,
+        },
+        headers={
+          "Content-Type": "application/json",
+          "X-Gerrit-Auth": xsrf,
+        },
+        data=json.dumps({
+          "username": "admin",
+        }),
+      )
+      print(r.text)
     '';
   };
 }
